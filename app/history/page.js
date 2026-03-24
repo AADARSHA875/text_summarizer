@@ -3,21 +3,37 @@ import { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
+import Link from "next/link";
 
 export default function History() {
-  const { token } = useAuth();
+  const { token, hasApiKey } = useAuth();
   const [history, setHistory]   = useState([]);
   const [loading, setLoading]   = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  const [error, setError] = useState("");
 
   const load = () => {
-    if (!token) return;
+    if (!token || !hasApiKey) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
-    api.getHistory(token).then(setHistory).finally(() => setLoading(false));
+    setError("");
+    api.getHistory(token)
+      .then(setHistory)
+      .catch((err) => {
+        setHistory([]);
+        setError(err.code === "API_KEY_EXPIRED"
+          ? "Your API key has expired. Please contact admin for a new key."
+          : err.code === "API_KEY_MISSING"
+            ? "API access is required to summarize text. Please enter your API key."
+            : "Unable to load history right now.");
+      })
+      .finally(() => setLoading(false));
   };
 
-  useEffect(load, [token]);
+  useEffect(load, [token, hasApiKey]);
 
   const deleteItem = async (id) => {
     setDeleting(id);
@@ -25,7 +41,13 @@ export default function History() {
       await api.deleteHistory(id, token);
       setHistory(h => h.filter(x => x.id !== id));
       if (expanded === id) setExpanded(null);
-    } catch {}
+    } catch (err) {
+      setError(err.code === "API_KEY_EXPIRED"
+        ? "Your API key has expired. Please contact admin for a new key."
+        : err.code === "API_KEY_MISSING"
+          ? "API access is required to summarize text. Please enter your API key."
+          : "Unable to delete this history item right now.");
+    }
     setDeleting(null);
   };
 
@@ -39,6 +61,15 @@ export default function History() {
           </div>
           <button className="btn btn-ghost" onClick={load} style={{ fontSize: 12 }}>↺ Refresh</button>
         </div>
+
+        {error && (
+          <div style={{ marginBottom: 20, background: "rgba(201,79,79,0.1)", border: "1px solid rgba(201,79,79,0.3)", borderRadius: 4, padding: "10px 14px", color: "var(--red)", fontSize: 13 }}>
+            {error}{" "}
+            {(error.includes("API key")) && (
+              <Link href="/setup-api-key" style={{ color: "var(--amber)", textDecoration: "none" }}>Manage API key</Link>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <div style={{ color: "var(--muted)", fontSize: 13 }}>Loading…</div>

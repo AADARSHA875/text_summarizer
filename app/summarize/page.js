@@ -4,9 +4,10 @@ import AppShell from "@/components/AppShell";
 import ResultCard from "@/components/ResultCard";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
+import Link from "next/link";
 
 export default function Summarize() {
-  const { token } = useAuth();
+  const { token, hasApiKey } = useAuth();
   const [tab, setTab]       = useState("text");
   const [text, setText]     = useState("");
   const [pdf, setPdf]       = useState(null);
@@ -21,6 +22,7 @@ export default function Summarize() {
   const handleSubmit = async () => {
     setError(""); setBusy(true); setResult(null);
     try {
+      if (!hasApiKey) throw new Error("API access is required to summarize text. Please enter your API key.");
       let res;
       if (tab === "text") {
         if (wordCount < 20) throw new Error("Please enter at least 20 words.");
@@ -31,7 +33,11 @@ export default function Summarize() {
       }
       setResult(res);
     } catch (err) {
-      setError(err.message);
+      setError(err.code === "API_KEY_EXPIRED"
+        ? "Your API key has expired. Please contact admin for a new key."
+        : err.code === "API_KEY_MISSING"
+          ? "API access is required to summarize text. Please enter your API key."
+          : err.message);
     } finally {
       setBusy(false);
     }
@@ -127,12 +133,25 @@ export default function Summarize() {
         {error && (
           <div style={{ marginTop: 16, background: "rgba(201,79,79,0.1)", border: "1px solid rgba(201,79,79,0.3)", borderRadius: 4, padding: "10px 14px", color: "var(--red)", fontSize: 13 }}>
             {error}
+            {(error.includes("API key")) && (
+              <>
+                {" "}
+                <Link href="/setup-api-key" style={{ color: "var(--amber)", textDecoration: "none" }}>Set it up here</Link>
+              </>
+            )}
+          </div>
+        )}
+
+        {!hasApiKey && (
+          <div style={{ marginTop: 16, background: "rgba(212,168,67,0.08)", border: "1px solid rgba(212,168,67,0.25)", borderRadius: 4, padding: "10px 14px", color: "var(--amber)", fontSize: 13 }}>
+            API access is required to summarize text. Please enter your API key.{" "}
+            <Link href="/setup-api-key" style={{ color: "var(--amber2)", textDecoration: "none" }}>Open setup</Link>
           </div>
         )}
 
         {/* Submit */}
         <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 16 }}>
-          <button className="btn btn-amber" onClick={handleSubmit} disabled={busy} style={{ fontSize: 14, padding: "11px 28px", minWidth: 160 }}>
+          <button className="btn btn-amber" onClick={handleSubmit} disabled={busy || !hasApiKey} style={{ fontSize: 14, padding: "11px 28px", minWidth: 160 }}>
             {busy ? (
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span className="spin" style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #0e0e0e", borderTopColor: "transparent", borderRadius: "50%" }} />
@@ -149,14 +168,14 @@ export default function Summarize() {
         </div>
 
         {/* Progress */}
-        {busy && (
+        {busy && hasApiKey && (
           <div style={{ marginTop: 16, height: 2, background: "var(--border)", borderRadius: 1, overflow: "hidden" }}>
             <div className="progress-bar" style={{ height: "100%", background: "var(--amber)", borderRadius: 1 }} />
           </div>
         )}
 
         {/* Busy hint */}
-        {busy && (
+        {busy && hasApiKey && (
           <div style={{ marginTop: 12, fontSize: 12, color: "var(--muted)" }}>
             Loading models on first request takes ~30–60 seconds. Subsequent requests are faster.
           </div>

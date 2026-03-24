@@ -9,7 +9,7 @@ const nextConfig = {
     ];
   },
   experimental: {
-    proxyTimeout: 300000, // 5 minutes
+    proxyTimeout: 400000, // 5 minutes
   },
 };
 module.exports = nextConfig;

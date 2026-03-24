@@ -6,13 +6,30 @@ import { api } from "@/lib/api";
 import Link from "next/link";
 
 export default function Dashboard() {
-  const { user, token } = useAuth();
+  const { user, token, hasApiKey } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (token) api.getHistory(token).then(setHistory).catch(() => {}).finally(() => setLoading(false));
-  }, [token]);
+    if (!token || !hasApiKey) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError("");
+    api.getHistory(token)
+      .then(setHistory)
+      .catch((err) => {
+        setHistory([]);
+        setError(err.code === "API_KEY_EXPIRED"
+          ? "Your API key has expired. Please contact admin for a new key."
+          : err.code === "API_KEY_MISSING"
+            ? "API access is required to summarize text. Please enter your API key."
+            : "Unable to load your summary history right now.");
+      })
+      .finally(() => setLoading(false));
+  }, [token, hasApiKey]);
 
   const totalWords    = history.reduce((s, h) => s + (h.word_count_input || 0), 0);
   const savedWords    = history.reduce((s, h) => s + ((h.word_count_input || 0) - (h.word_count_output || 0)), 0);
@@ -52,6 +69,15 @@ export default function Dashboard() {
           </div>
           <span style={{ color: "var(--amber)", fontSize: 20 }}>→</span>
         </Link>
+
+        {error && (
+          <div style={{ marginBottom: 24, background: "rgba(201,79,79,0.1)", border: "1px solid rgba(201,79,79,0.3)", borderRadius: 4, padding: "10px 14px", color: "var(--red)", fontSize: 13 }}>
+            {error}{" "}
+            {(error.includes("API key")) && (
+              <Link href="/setup-api-key" style={{ color: "var(--amber)", textDecoration: "none" }}>Manage API key</Link>
+            )}
+          </div>
+        )}
 
         {/* Stats grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 36 }}>

@@ -7,10 +7,11 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard",  icon: "◈" },
   { href: "/summarize", label: "Summarize",  icon: "◎" },
   { href: "/history",   label: "History",    icon: "◷" },
+  { href: "/setup-api-key", label: "API Key", icon: "◉" },
 ];
 
 export default function Sidebar() {
-  const { user, logout } = useAuth();
+  const { user, logout, hasApiKey } = useAuth();
   const path = usePathname();
 
   return (
@@ -58,6 +59,9 @@ export default function Sidebar() {
         </div>
         <div style={{ fontSize: 11, color: "var(--border2)", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {user?.email}
+        </div>
+        <div style={{ fontSize: 11, color: hasApiKey ? "var(--green)" : "var(--amber)", marginBottom: 12 }}>
+          {hasApiKey ? "API key configured" : "API key required"}
         </div>
         <button className="btn btn-ghost" onClick={logout} style={{ width: "100%", justifyContent: "center", fontSize: 12, padding: "7px" }}>
           Sign out

@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { user, ready } = useAuth();
+  const { user, ready, hasApiKey } = useAuth();
   const router = useRouter();
-  useEffect(() => { if (ready && user) router.push("/dashboard"); }, [ready, user]);
+  useEffect(() => {
+    if (ready && user) router.push(hasApiKey ? "/dashboard" : "/setup-api-key");
+  }, [ready, user, hasApiKey, router]);
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 24, position: "relative", overflow: "hidden" }}>
