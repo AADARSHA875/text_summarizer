@@ -51,7 +51,7 @@ export default function Login() {
       <div style={{ width: "100%", maxWidth: 400 }} className="fade-up">
         <Link href="/" style={{ display: "block", marginBottom: 40, textDecoration: "none" }}>
           <span style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--text)" }}>
-            Summ<em style={{ color: "var(--amber)" }}>ai</em>ize
+            Summ<em style={{ color: "var(--amber)" }}>ai</em>izer
           </span>
         </Link>
 

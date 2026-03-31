@@ -1,17 +1,16 @@
 "use client";
+import { useAuth } from "@/lib/auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/lib/auth";
 
 const NAV = [
-  { href: "/dashboard", label: "Dashboard",  icon: "◈" },
-  { href: "/summarize", label: "Summarize",  icon: "◎" },
-  { href: "/history",   label: "History",    icon: "◷" },
-  { href: "/setup-api-key", label: "API Key", icon: "◉" },
+  { href: "/dashboard", label: "Dashboard", icon: "◈" },
+  { href: "/summarize", label: "Summarize", icon: "◎" },
+  { href: "/history", label: "History", icon: "◷" },
 ];
 
 export default function Sidebar() {
-  const { user, logout, hasApiKey } = useAuth();
+  const { user, logout } = useAuth();
   const path = usePathname();
 
   return (
@@ -21,17 +20,15 @@ export default function Sidebar() {
       flexDirection: "column", padding: "24px 0", flexShrink: 0,
       position: "sticky", top: 0, height: "100vh",
     }}>
-      {/* Logo */}
       <div style={{ padding: "0 20px 28px", borderBottom: "1px solid var(--border)" }}>
         <Link href="/dashboard" style={{ textDecoration: "none" }}>
           <span style={{ fontFamily: "var(--serif)", fontSize: 20, color: "var(--text)" }}>
-            Summ<em style={{ color: "var(--amber)" }}>ai</em>ize
+            Text Summ<em style={{ color: "var(--amber)" }}>ai</em>izer
           </span>
         </Link>
-        <div style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4 }}>v3 · text summarizer</div>
+        <div style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4 }}> </div>
       </div>
 
-      {/* Nav */}
       <nav style={{ padding: "20px 12px", flex: 1 }}>
         {NAV.map(({ href, label, icon }) => {
           const active = path === href;
@@ -52,16 +49,12 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User */}
       <div style={{ padding: "20px", borderTop: "1px solid var(--border)" }}>
         <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {user?.full_name || user?.username}
         </div>
         <div style={{ fontSize: 11, color: "var(--border2)", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {user?.email}
-        </div>
-        <div style={{ fontSize: 11, color: hasApiKey ? "var(--green)" : "var(--amber)", marginBottom: 12 }}>
-          {hasApiKey ? "API key configured" : "API key required"}
         </div>
         <button className="btn btn-ghost" onClick={logout} style={{ width: "100%", justifyContent: "center", fontSize: 12, padding: "7px" }}>
           Sign out

@@ -52,7 +52,7 @@ export default function Register() {
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
         <Link href="/" style={{ display: "block", marginBottom: 40, textDecoration: "none" }}>
           <span style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--text)" }}>
-            Summ<em style={{ color: "var(--amber)" }}>ai</em>ize
+            Summ<em style={{ color: "var(--amber)" }}>ai</em>izer
           </span>
         </Link>
 
@@ -92,11 +92,11 @@ export default function Register() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div>
                 <label style={{ display: "block", fontSize: 11, color: "var(--muted)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>Full name</label>
-                <input className="field" type="text" placeholder="Aadarsha" {...f("fullName")} />
+                <input className="field" type="text" placeholder="Your name" {...f("fullName")} />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: 11, color: "var(--muted)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>Username *</label>
-                <input className="field" type="text" placeholder="aadarsha" {...f("username")} required />
+                <input className="field" type="text" placeholder="Your username" {...f("username")} required />
               </div>
             </div>
             <div>

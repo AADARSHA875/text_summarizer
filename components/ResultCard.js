@@ -51,19 +51,12 @@ export default function ResultCard({ result }) {
       {/* Key sentences toggle */}
       {result.key_sentences?.length > 0 && (
         <div>
-          <button onClick={() => setShowKeys(!showKeys)} style={{
-            width: "100%", padding: "12px 20px", background: "none", border: "none",
-            textAlign: "left", cursor: "pointer", fontSize: 12, color: "var(--muted)",
-            fontFamily: "var(--mono)", display: "flex", alignItems: "center", gap: 8,
-          }}>
-            <span style={{ transition: "transform 0.2s", transform: showKeys ? "rotate(90deg)" : "none", display: "inline-block", fontSize: 10 }}>▶</span>
-            {showKeys ? "Hide" : "Show"} {result.key_sentences.length} extracted key sentences
-          </button>
+
           {showKeys && (
             <div style={{ padding: "0 20px 20px" }}>
               {result.key_sentences.map((s, i) => (
                 <div key={i} style={{ padding: "10px 14px", marginBottom: 8, borderRadius: 4, background: "rgba(212,168,67,0.04)", borderLeft: "2px solid var(--amber)", fontSize: 13, lineHeight: 1.65, color: "var(--text)" }}>
-                  <span style={{ fontSize: 10, color: "var(--muted)", marginRight: 8, fontFamily: "var(--mono)" }}>#{String(i+1).padStart(2,"0")}</span>
+                  <span style={{ fontSize: 10, color: "var(--muted)", marginRight: 8, fontFamily: "var(--mono)" }}>#{String(i + 1).padStart(2, "0")}</span>
                   {s}
                 </div>
               ))}
